@@ -148,7 +148,7 @@ gets all the users info,
     name: (string),
     profile_photo:? (string),
     username: (string),
-    password: (strinf),
+    password: (string),
     bio: (string),
     links: (string),
     phone_number: (string),
@@ -598,7 +598,7 @@ Supported HTTP Methods: **GET,POST,DELETE**
 
 ### `GET`
 
-Returns the users favourites as a feed,
+Returns the users is following,
 
 **Required Params:**
 
@@ -621,7 +621,7 @@ Retunedred Data:
 
 ### `POST`
 
-favourites an upload,
+shows if you followed a user,
 
 **Required Headers:**
 
@@ -668,7 +668,7 @@ Supported HTTP Methods: **GET**
 
 ### `GET`
 
-Returns the users favourites as a feed,
+Returns who the user is followed by as a feed,
 
 **Required Params:**
 
