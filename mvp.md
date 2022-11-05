@@ -434,7 +434,7 @@ Data Returned:
 
 <br>
 <br>
-<!-- ---------------------------------------------------------------------------------------- -->
+
 ## `Upload-Tags`
 **URL: http://127.0.0.1:5000/api/upload-tags**  
 Supported HTTP Methods: **GET,POST,PATCH,DELETE**
@@ -447,8 +447,7 @@ Returns information about specific user-comment,
 
 ```
 {
-    user_id: (int),
-    token: (string)
+    upload_id: (int),
 }
 ```
 
@@ -456,8 +455,7 @@ Retunedred Data:
 
 ```
 {
-    user_id
-    comment: (string)
+    tags: (string)
 }
 ```
 
@@ -467,7 +465,7 @@ Retunedred Data:
 
 ### `POST`
 
-Adds a new comment to a upload,
+Adds a new tag to a upload,
 
 **Required Headers:**
 
@@ -482,50 +480,18 @@ Required Data:
 
 ```
 {
-    comment: (string)
+    tag: (string)
 }
 ```
 
-**Data Returned:**
-
-```
-{
-    user_id: (string)
-}
-```
-
-<br>
-<br>
-
-### `PATCH`
-
-Modifies an existing comment, 
-
-**Required Headers:**
-
-```
-{
-    user_id: (int),
-    token: (string)
-}
-```
-
-**Optional Data:**
-
-```
-{
-    comment: (string)
-}
-```
-
-**No Data Returned**
+**No Data Returned:**
 
 <br>
 <br>
 
 ### `DELETE`
 
-Deletes an existing comment, will error if the upload_id does not exist.
+Deletes an existing tag, will error if the upload_id does not exist.
 
 **Required Headers:**
 
@@ -539,4 +505,77 @@ Deletes an existing comment, will error if the upload_id does not exist.
 **No Data Returned**
 
 <br>
+<!-- ---------------------------------------------------------------------------------------- -->
+<br>
+
+## `Favourite`
+**URL: http://127.0.0.1:5000/api/favourite**  
+Supported HTTP Methods: **GET,POST,DELETE**
+
+### `GET`
+
+Returns the users favourites as a feed,
+
+**Required Params:**
+
+```
+{
+    favourite_user_id: (int),
+    favourite_upload_id: (int)
+}
+```
+
+Retunedred Data:
+
+```
+{
+    tags: (string)
+}
+```
+
+
+<br>
+<br>
+
+### `POST`
+
+Adds a new tag to a upload,
+
+**Required Headers:**
+
+```
+{
+    upload_id: (int),
+    token: (string)
+}
+```
+
+Required Data:
+
+```
+{
+    tag: (string)
+}
+```
+
+**No Data Returned:**
+
+<br>
+<br>
+
+### `DELETE`
+
+Deletes an existing tag, will error if the upload_id does not exist.
+
+**Required Headers:**
+
+```
+{
+   
+    token: (string)
+}
+```
+
+**No Data Returned**
+
 <br>
