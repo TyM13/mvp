@@ -158,7 +158,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'name','username',NULL,NULL,NULL,'email','*47E97E39E2B32B15EB9278E53F7BFCA57F8E6B2C',NULL,NULL,'2022-11-05','salt','password'),(7,'testname','testusername',NULL,NULL,NULL,'testemail','*3DA161F762346CDF2B63E10DA0F706D4F0BD7EC3',NULL,NULL,'2022-11-05','salt','testpassword');
+INSERT INTO `user` VALUES (1,'name','username',NULL,NULL,NULL,'email','*47E97E39E2B32B15EB9278E53F7BFCA57F8E6B2C',NULL,NULL,'2022-11-05','salt','password');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -178,7 +178,7 @@ CREATE TABLE `user_session` (
   UNIQUE KEY `user_session_un` (`token`),
   KEY `user_session_FK` (`user_id`),
   CONSTRAINT `user_session_FK` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -187,7 +187,7 @@ CREATE TABLE `user_session` (
 
 LOCK TABLES `user_session` WRITE;
 /*!40000 ALTER TABLE `user_session` DISABLE KEYS */;
-INSERT INTO `user_session` VALUES (1,1,'token','2022-11-05'),(7,7,'testtoken','2022-11-05');
+INSERT INTO `user_session` VALUES (1,1,'token','2022-11-05');
 /*!40000 ALTER TABLE `user_session` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -224,7 +224,7 @@ UNLOCK TABLES;
 --
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
-/*!50003 DROP PROCEDURE IF EXISTS `get_user` */;
+/*!50003 DROP PROCEDURE IF EXISTS `user_delete` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -232,12 +232,63 @@ UNLOCK TABLES;
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `get_user`(user_id_input int unsigned)
+CREATE DEFINER=`root`@`localhost` PROCEDURE `user_delete`(user_password_input varchar(100), user_session_token_input varchar(200))
+    MODIFIES SQL DATA
+begin
+	
+delete u from `user` u inner join user_session us on us.user_id=u.id
+where u.password=PASSWORD(concat(user_password_input, (select salt where token=user_session_token_input))) and token=user_session_token_input; 
+	
+	commit;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `user_get` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `user_get`(user_id_input int unsigned)
 begin
 	
 	select id, name, username, bio, links, profile_photo, email, phone_number, date_of_birth, created_at 
 	from `user` u 
 	where u.id=user_id_input;
+	
+	commit;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `user_get_sensative` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `user_get_sensative`(user_session_token_input varchar(200))
+begin
+	
+	select convert(u.name using utf8) as name, convert(u.username using utf8) as username, convert(u.password using utf8) as password, convert(u.bio using utf8) as bio, convert(u.links using utf8) as links,
+	convert(u.profile_photo using utf8) as profile_photo, convert(u.email using utf8) as email, convert(u.phone_number using utf8) as phone_number, date_of_birth 
+	
+	from `user` u inner join user_session us on us.user_id=u.id 
+	
+	where us.token=user_session_token_input;
 	
 	commit;
 END ;;
@@ -256,7 +307,7 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `user_login`(user_email_input varchar(100), user_password_input varchar(100), user_session_token_input varchar(200), user_salt_input varchar(100))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `user_login`(user_email_input varchar(100), user_password_input varchar(100), user_session_token_input varchar(200))
     MODIFIES SQL DATA
 begin
 	
@@ -266,6 +317,60 @@ begin
 	select user_id, convert(token using utf8) as token
 	from user_session us  
 	where us.id=last_insert_id();
+	
+	commit;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `user_logout` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `user_logout`(user_session_token_input varchar(200))
+    MODIFIES SQL DATA
+begin
+	
+	delete us from user_session us where token=user_session_token_input;
+
+select row_count();
+	
+	commit;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `user_patch` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `user_patch`(user_email_input varchar(100), user_name_input varchar(50), user_profile_photo_input varchar(100), user_username_input varchar(100),
+ user_bio_input varchar(255), user_links_input varchar(1000), user_phone_number_input varchar(20), user_date_of_birth_input date, user_session_token_input varchar(200))
+    MODIFIES SQL DATA
+begin
+	
+	update `user` u inner join user_session us on u.id=us.user_id
+	set u.email=user_email_input, u.name=user_name_input, u.profile_photo=user_profile_photo_input, u.username=user_username_input,
+	u.bio=user_bio_input, u.links=user_links_input, u.phone_number=user_phone_number_input, u.date_of_birth=user_date_of_birth_input
+	where us.token=user_session_token_input;
+
+select row_count();
 	
 	commit;
 END ;;
@@ -316,4 +421,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-11-05 14:14:22
+-- Dump completed on 2022-11-05 17:05:08

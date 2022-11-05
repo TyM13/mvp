@@ -30,9 +30,6 @@ Returns information about a single user, will error if the client_id does not ex
     bio: (string),
     links: (string),
     profile_photo: (string),
-    email: (string),
-    phone_number: (string),?
-    date_of_birth: (string),?
     created_at: (string)
 }
 ```
@@ -123,6 +120,41 @@ Delete an existing user if you have a valid token and password. Note that the to
 ```
 
 **No Data Returned**
+
+<br>
+<br>
+
+## `User-Sensative`
+**URL: http://127.0.0.1:5000/api/user-sensative**  
+Supported HTTP Methods: **get,**
+
+### `GET`
+
+gets all the users info,
+
+**Required Params:**
+
+```
+{
+    token: (string)
+}
+```
+
+**Data Returned**
+
+```
+{
+    email: (string),
+    name: (string),
+    profile_photo:? (string),
+    username: (string),
+    password: (strinf),
+    bio: (string),
+    links: (string),
+    phone_number: (string),
+    date_of_birth (number)
+}
+```
 
 <br>
 <br>
@@ -276,27 +308,6 @@ Delete an existing upload if you have a valid token. Note that the token is sent
 ```
 
 **No Data Returned**
-<br>
-<br>
-
-## `User-Password-Change`
-**URL: http://127.0.0.1:5000/api/user-password**  
-Supported HTTP Methods: **PATCH,**
-
-### `PATCH`
-
-Lets the user change their password, will error if the token does not exist.
-
-**Required Headers:**
-
-```
-{
-    token: (string)
-}
-```
-
-**No Data Returned**
-
 <br>
 <br>
 
