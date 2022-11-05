@@ -229,7 +229,6 @@ Required Data:
     title: (string),*
     image_ref: (string),*
     description: (string), optional?
-    tags: (string), optional?
     created_at: (string)
 }
 ```
@@ -391,7 +390,7 @@ Modifies an existing comment,
 
 ### `DELETE`
 
-Deletes an existing comment, will error if the upload_id does not exist.
+Deletes an existing comment,
 
 **Required Headers:**
 
@@ -491,7 +490,7 @@ Required Data:
 
 ### `DELETE`
 
-Deletes an existing tag, will error if the upload_id does not exist.
+Deletes an existing tag,
 
 **Required Headers:**
 
@@ -505,7 +504,6 @@ Deletes an existing tag, will error if the upload_id does not exist.
 **No Data Returned**
 
 <br>
-<!-- ---------------------------------------------------------------------------------------- -->
 <br>
 
 ## `Favourite`
@@ -539,13 +537,13 @@ Retunedred Data:
 
 ### `POST`
 
-Adds a new tag to a upload,
+favourites an upload,
 
 **Required Headers:**
 
 ```
 {
-    upload_id: (int),
+
     token: (string)
 }
 ```
@@ -554,7 +552,8 @@ Required Data:
 
 ```
 {
-    tag: (string)
+    favourite_user_id: (int),
+    favourite_upload_id: (int),
 }
 ```
 
@@ -565,7 +564,7 @@ Required Data:
 
 ### `DELETE`
 
-Deletes an existing tag, will error if the upload_id does not exist.
+Deletes an existing favourite, 
 
 **Required Headers:**
 
@@ -578,4 +577,102 @@ Deletes an existing tag, will error if the upload_id does not exist.
 
 **No Data Returned**
 
+<br>
+<!-- ---------------------------------------------------------------------------------------- -->
+<br>
+
+## `follow`
+**URL: http://127.0.0.1:5000/api/follow**  
+Supported HTTP Methods: **GET,POST,DELETE**
+
+### `GET`
+
+Returns the users favourites as a feed,
+
+**Required Params:**
+
+```
+{
+    token: (string)
+}
+```
+
+Retunedred Data:
+
+```
+{
+    following_user_id: (int),
+}
+```
+
+<br>
+<br>
+
+### `POST`
+
+favourites an upload,
+
+**Required Headers:**
+
+```
+{
+    token: (string)
+}
+```
+
+Required Data:
+
+```
+{
+    favourite_user_id: (int),  or returned data?
+    favourite_upload_id: (int), or returned data?
+}
+```
+
+**No Data Returned:**
+
+<br>
+<br>
+
+### `DELETE`
+
+stops following a user,
+
+**Required Headers:**
+
+```
+{
+    token: (string)
+}
+```
+
+**No Data Returned**
+
+<br>
+<br>
+
+## `followed`
+**URL: http://127.0.0.1:5000/api/followed**  
+Supported HTTP Methods: **GET**
+
+### `GET`
+
+Returns the users favourites as a feed,
+
+**Required Params:**
+
+```
+{
+    token: (string)
+}
+```
+
+Retunedred Data:
+
+```
+{
+    followed_user_id: (int)
+}
+```
+<br>
 <br>
