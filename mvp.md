@@ -24,7 +24,7 @@ Returns information about a single user, will error if the client_id does not ex
 
 ```
 {   
-    id: (number),
+    id: (number), 
     name: (string),
     username: (string),
     bio: (string),
@@ -89,7 +89,6 @@ Modify an existing user if you have a valid token. Note that the token is sent a
     name: (string),
     profile_photo:? (string),
     username: (string),
-    password: (string),
     bio: (string),
     links: (string),
     phone_number: (string),
@@ -135,7 +134,7 @@ Supported HTTP Methods: **POST, DELETE**
 
 ### `POST`
 
-Log a client in. Will error if the email / password don't exist in the system.
+Log a user in. Will error if the email / password don't exist in the system.
 
 **Required Data:**
 
@@ -279,4 +278,265 @@ Delete an existing upload if you have a valid token. Note that the token is sent
 
 **No Data Returned**
 <br>
+<br>
 
+## `User-Password-Change`
+**URL: http://127.0.0.1:5000/api/user-password**  
+Supported HTTP Methods: **PATCH,**
+
+### `PATCH`
+
+Lets the user change their password, will error if the token does not exist.
+
+**Required Headers:**
+
+```
+{
+    token: (string)
+}
+```
+
+**No Data Returned**
+
+<br>
+<br>
+
+## `User-Comment`
+**URL: http://127.0.0.1:5000/api/user-comment**  
+Supported HTTP Methods: **GET,POST,PATCH,DELETE**
+
+### `GET`
+
+Returns information about specific user-comment,
+
+**Required Params:**
+
+```
+{
+    user_id: (int),
+    token: (string)
+}
+```
+
+Retunedred Data:
+
+```
+{
+    user_id
+    comment: (string)
+}
+```
+
+
+<br>
+<br>
+
+### `POST`
+
+Adds a new comment to a upload,
+
+**Required Headers:**
+
+```
+{
+    upload_id: (int),
+    token: (string)
+}
+```
+
+Required Data:
+
+```
+{
+    comment: (string)
+}
+```
+
+**Data Returned:**
+
+```
+{
+    user_id: (string)
+}
+```
+
+<br>
+<br>
+
+### `PATCH`
+
+Modifies an existing comment, 
+
+**Required Headers:**
+
+```
+{
+    user_id: (int),
+    token: (string)
+}
+```
+
+**Optional Data:**
+
+```
+{
+    comment: (string)
+}
+```
+
+**No Data Returned**
+
+<br>
+<br>
+
+### `DELETE`
+
+Deletes an existing comment, will error if the upload_id does not exist.
+
+**Required Headers:**
+
+```
+{
+   
+    token: (string)
+}
+```
+
+**No Data Returned**
+
+<br>
+<br>
+
+## `Users-Comments`
+**URL: http://127.0.0.1:5000/api/users-comments**  
+Supported HTTP Methods: **GET**
+
+### `GET`
+
+Returns all the comments associated with the upload,
+
+**Required Params:**
+
+```
+{
+upload_id: (int)
+}
+```
+
+Data Returned:
+
+```
+{
+    user_id: (int)
+    comments: (string)
+}
+```
+
+<br>
+<br>
+<!-- ---------------------------------------------------------------------------------------- -->
+## `Upload-Tags`
+**URL: http://127.0.0.1:5000/api/upload-tags**  
+Supported HTTP Methods: **GET,POST,PATCH,DELETE**
+
+### `GET`
+
+Returns information about specific user-comment,
+
+**Required Params:**
+
+```
+{
+    user_id: (int),
+    token: (string)
+}
+```
+
+Retunedred Data:
+
+```
+{
+    user_id
+    comment: (string)
+}
+```
+
+
+<br>
+<br>
+
+### `POST`
+
+Adds a new comment to a upload,
+
+**Required Headers:**
+
+```
+{
+    upload_id: (int),
+    token: (string)
+}
+```
+
+Required Data:
+
+```
+{
+    comment: (string)
+}
+```
+
+**Data Returned:**
+
+```
+{
+    user_id: (string)
+}
+```
+
+<br>
+<br>
+
+### `PATCH`
+
+Modifies an existing comment, 
+
+**Required Headers:**
+
+```
+{
+    user_id: (int),
+    token: (string)
+}
+```
+
+**Optional Data:**
+
+```
+{
+    comment: (string)
+}
+```
+
+**No Data Returned**
+
+<br>
+<br>
+
+### `DELETE`
+
+Deletes an existing comment, will error if the upload_id does not exist.
+
+**Required Headers:**
+
+```
+{
+   
+    token: (string)
+}
+```
+
+**No Data Returned**
+
+<br>
+<br>
