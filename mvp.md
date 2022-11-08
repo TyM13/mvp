@@ -50,7 +50,6 @@ Will error if there is a duplicate username or password (the user already exists
     name: (string),
     username: (string),
     password: (string)
-    created_at: (string)
 }
 ```
 
@@ -310,112 +309,6 @@ Delete an existing upload if you have a valid token. Note that the token is sent
 <br>
 <br>
 
-## `User-Comment`
-**URL: http://127.0.0.1:5000/api/user-comment**  
-Supported HTTP Methods: **GET,POST,PATCH,DELETE**
-
-### `GET`
-
-Returns information about specific user-comment,
-
-**Required Params:**
-
-```
-{
-    user_id: (int),
-    token: (string)
-}
-```
-
-Retunedred Data:
-
-```
-{
-    user_id
-    comment: (string)
-}
-```
-
-
-<br>
-<br>
-
-### `POST`
-
-Adds a new comment to a upload,
-
-**Required Headers:**
-
-```
-{
-    upload_id: (int),
-    token: (string)
-}
-```
-
-Required Data:
-
-```
-{
-    comment: (string)
-}
-```
-
-**Data Returned:**
-
-```
-{
-    user_id: (string)
-}
-```
-
-<br>
-<br>
-
-### `PATCH`
-
-Modifies an existing comment, 
-
-**Required Headers:**
-
-```
-{
-    user_id: (int),
-    token: (string)
-}
-```
-
-**Optional Data:**
-
-```
-{
-    comment: (string)
-}
-```
-
-**No Data Returned**
-
-<br>
-<br>
-
-### `DELETE`
-
-Deletes an existing comment,
-
-**Required Headers:**
-
-```
-{
-   
-    token: (string)
-}
-```
-
-**No Data Returned**
-
-<br>
-<br>
-
 ## `Users-Comments`
 **URL: http://127.0.0.1:5000/api/users-comments**  
 Supported HTTP Methods: **GET**
@@ -428,7 +321,78 @@ Returns all the comments associated with the upload,
 
 ```
 {
-upload_id: (int)
+    upload_id: (int)
+}
+```
+
+Data Returned:
+
+```
+{
+    user_id: (int)
+    comments: (string)
+}
+```
+
+### `POST`
+
+Returns all the comments associated with the upload,
+
+**Required headers:**
+
+```
+{
+    token: (string),
+    upload_id: (int)
+}
+```
+
+Data Required:
+
+```
+{
+    comments: (string)
+}
+```
+
+```
+{
+    user_id: (int)
+}
+```
+
+### `PATCH`
+
+Returns all the comments associated with the upload,
+
+**Required Params:**
+
+```
+{
+    token: (string),
+    upload_id: (int)
+}
+```
+
+Data Returned:
+
+```
+{
+    user_id: (int)
+    comments: (string)
+}
+```
+
+### `DELETE`
+
+Returns all the comments associated with the upload,
+
+**Required Params:**
+
+```
+{
+    upload_id: (int),
+    token: (string)
 }
 ```
 
