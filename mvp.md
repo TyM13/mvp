@@ -286,7 +286,6 @@ Modify an existing upload if you have a valid token. Note that the token is sent
 {
     title: (string), optional
     description: (string), optional
-    tags: (string) optional
 }
 ```
 
@@ -501,7 +500,7 @@ Required Data:
 
 ### `DELETE`
 
-Deletes an existing tag,
+Deletes an existing tag for an upload,
 
 **Required Headers:**
 
@@ -512,7 +511,12 @@ Deletes an existing tag,
 }
 ```
 
-**No Data Returned**
+**Required Data**
+```
+{
+    (tag)id: (int)
+}
+```
 
 <br>
 <br>
@@ -592,7 +596,7 @@ Deletes an existing favourite,
 <!-- ---------------------------------------------------------------------------------------- -->
 <br>
 
-## `follow`
+## `following`
 **URL: http://127.0.0.1:5000/api/follow**  
 Supported HTTP Methods: **GET,POST,DELETE**
 
@@ -662,7 +666,7 @@ stops following a user,
 <br>
 <br>
 
-## `followed`
+## `followed-by`
 **URL: http://127.0.0.1:5000/api/followed**  
 Supported HTTP Methods: **GET**
 
