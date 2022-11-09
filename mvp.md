@@ -173,7 +173,6 @@ Log a user in. Will error if the email / password don't exist in the system.
 {
     email: (string),
     password: (string)
-    created_at: (string)??
 }
 ```
 

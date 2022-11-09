@@ -1,9 +1,11 @@
-from apihelper import check_endpoint_info, fill_optional_data
+from apihelper import check_endpoint_info, fill_optional_data, save_file
 from dbhelper import run_statment
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, send_from_directory
 import json
 import dbcreds
 from uuid import uuid4
+import user_login.user_login
+import user.user
 
 app = Flask(__name__)
 
@@ -14,33 +16,14 @@ app = Flask(__name__)
 
 @app.get('/api/user')
 def get_user():
-    is_valid = check_endpoint_info(request.args, ['user_id'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
-
-    results = run_statment('CALL user_get(?)', [request.args.get('user_id')])
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
-
+    return user.user.get()
 
 # user-post
 
 @app.post('/api/user')
 def post_user():
-    is_valid = check_endpoint_info(request.json, ['email', 'name', 'username', 'password'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
+    return user.user.post()
 
-    token = uuid4().hex
-    salt = uuid4().hex
-    results = run_statment('CALL user_post(?,?,?,?,?,?)', [request.json.get('email'), request.json.get('name'),
-     request.json.get('username'), request.json.get('password'),token, salt])
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
 
 
 # user-patch
@@ -66,7 +49,7 @@ def patch_user():
         return make_response(json.dumps(results, default=str), 500)
 
 
-# user-patch sensative
+# user-patch sensative ?
 
 
 
@@ -75,16 +58,7 @@ def patch_user():
 
 @app.delete('/api/user')
 def delete_user():
-    is_valid = check_endpoint_info(request.headers, ['token'])
-    is_valid_password = check_endpoint_info(request.json, ['password'])
-    if(is_valid != None or is_valid_password != None):
-        return make_response(json.dumps(is_valid, is_valid_password, default=str), 400)
-
-    results = run_statment('CALL user_delete(?,?)', [request.json['password'], request.headers['token']])
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
+    return user.user.delete()
 
 
 
@@ -92,6 +66,56 @@ def delete_user():
 #------------------------- /api/user-login -------------------------#
 # user-login
 
+@app.post('/api/user-login')
+def login_user():
+    return user_login.user_login.post()
+
+# user-logout
+
+@app.delete('/api/user-login')
+def logout_user():
+    return user_login.user_login.delete()
+
+
+
+
+#------------------------- /api/user-upload -------------------------#
+
+@app.get('/api/user-upload')# need another get?
+def upload_get():
+    is_valid = check_endpoint_info(request.args, ['upload_id'])
+    if(is_valid != None):
+        return make_response(json.dumps(is_valid, default=str), 400)
+
+    results = run_statment('CALL get_upload(?)', [request.args.get('upload_id')])
+    if(type(results) != list):
+        return make_response(json.dumps(results, default=str), 500)
+    elif(len(results) == 0):
+        return make_response(json.dumps("invalid image id"), 400)
+
+    return send_from_directory('images', results[0]['image_ref'])
+
+# post upload
+
+@app.post('/api/user-upload')
+def upload_post():
+    is_valid = check_endpoint_info
+    if(is_valid != None):
+        return make_response(json.dumps(is_valid, default=str), 400)
+
+    is_valid = check_endpoint_info(request.files, ['upload_image'])
+    if(is_valid != None):
+        return make_response(json.dumps(is_valid, default=str), 400)
+
+    filename = save_file(request.files['upload_image'])
+    if(filename == None):
+        return make_response(json.dumps("Sorry, something has gone wrong"), 500)
+    
+    results = run_statment('CALL post_upload(?,?,?)', [filename, request.form['title'], request.form['description']])
+    if(type(results) == list):
+        return make_response(json.dumps('Success'), 200)
+    else:
+        return make_response(json.dumps(results), 500)
 
 
 
