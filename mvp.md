@@ -275,6 +275,7 @@ Modify an existing upload if you have a valid token. Note that the token is sent
 ```
 {
     token: (string)
+   upload_id as well?
 }
 ```
 

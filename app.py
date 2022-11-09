@@ -34,31 +34,53 @@ def patch_user():
     if(is_valid != None):
         return make_response(json.dumps(is_valid, default=str), 400)
 
-    results = run_statment('CALL user_get_sensative(?)', request.headers.get('token'))
+    results = run_statment('CALL user_get_sensative(?)', [request.headers.get('token')])
     if(type(results) != list):
         return make_response(json.dumps(results), 400)
 
     results = fill_optional_data(request.json, results[0], ['name','profile_photo','username',
     'bio','links'])
 
-    results = run_statment('CALL user_patch(?,?,?,?,?)', [results['name'], results['profile_photo'], results['username'],
+    results = run_statment('CALL user_patch(?,?,?,?,?,?)', [results['name'], results['profile_photo'], results['username'],
      results['bio'], results['links'], request.headers['token']])
     if(type(results) == list):
         return make_response(json.dumps(results, default=str), 200)
     else:
         return make_response(json.dumps(results, default=str), 500)
 
-
-# user-patch sensative ?
-
-
-
-
 # user-delete
 
 @app.delete('/api/user')
 def delete_user():
     return user.user.delete()
+
+
+
+# user-patch sensative ?
+
+@app.patch('/api/user-sensative')
+def patch_user_sensative():
+    is_valid = check_endpoint_info(request.headers, ['token'])
+    if(is_valid != None):
+        return make_response(json.dumps(is_valid, default=str), 400)
+
+    results = run_statment('CALL user_get_sensative(?)', [request.headers.get('token')])
+    if(type(results) != list):
+        return make_response(json.dumps(results), 400)
+
+    results = fill_optional_data(request.json, results[0], ['email','phone_number',
+    'date_of_birth'])
+
+    results = run_statment('CALL user_patch_sensative(?,?,?,?)', [results['email'], results['phone_number'],
+    results['date_of_birth'], request.headers['token']])
+    if(type(results) == list):
+        return make_response(json.dumps(results, default=str), 200)
+    else:
+        return make_response(json.dumps(results, default=str), 500)
+
+
+
+
 
 
 
@@ -81,25 +103,12 @@ def logout_user():
 
 #------------------------- /api/user-upload -------------------------#
 
-@app.get('/api/user-upload')# need another get?
-def upload_get():
-    is_valid = check_endpoint_info(request.args, ['upload_id'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
-
-    results = run_statment('CALL get_upload(?)', [request.args.get('upload_id')])
-    if(type(results) != list):
-        return make_response(json.dumps(results, default=str), 500)
-    elif(len(results) == 0):
-        return make_response(json.dumps("invalid image id"), 400)
-
-    return send_from_directory('images', results[0]['image_ref'])
 
 # post upload
 
 @app.post('/api/user-upload')
 def upload_post():
-    is_valid = check_endpoint_info
+    is_valid = check_endpoint_info(request.form, ['title', 'description'])
     if(is_valid != None):
         return make_response(json.dumps(is_valid, default=str), 400)
 
@@ -118,6 +127,32 @@ def upload_post():
         return make_response(json.dumps(results), 500)
 
 
+# patch upload
+#need another get upload with header as token?
+
+@app.patch('/api/user-upload')
+def upload_patch():
+    is_valid = check_endpoint_info(request.headers, ['token'])
+    if(is_valid != None):
+        return make_response(json.dumps(is_valid, default=str), 400)
+    
+    
+#------------------------- /api/user-get-upload-image -------------------------#
+
+# need another enpoint?
+@app.get('/api/user-upload-image')
+def upload_get():
+    is_valid = check_endpoint_info(request.args, ['upload_id'])
+    if(is_valid != None):
+        return make_response(json.dumps(is_valid, default=str), 400)
+
+    results = run_statment('CALL get_upload_image(?)', [request.args.get('upload_id')])
+    if(type(results) != list):
+        return make_response(json.dumps(results, default=str), 500)
+    elif(len(results) == 0):
+        return make_response(json.dumps("invalid image id"), 400)
+
+    return send_from_directory('images', results[0]['image_ref'])
 
 
 
