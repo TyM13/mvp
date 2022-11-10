@@ -6,9 +6,9 @@ import dbcreds
 from uuid import uuid4
 import user_login.user_login
 import user.user
+import user_sensative.user_sensative
 
 app = Flask(__name__)
-
 
 
 #------------------------- /api/user -------------------------#
@@ -25,28 +25,12 @@ def post_user():
     return user.user.post()
 
 
-
 # user-patch
 
 @app.patch('/api/user')
 def patch_user():
-    is_valid = check_endpoint_info(request.headers, ['token'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
+    return user.user.patch()
 
-    results = run_statment('CALL user_get_sensative(?)', [request.headers.get('token')])
-    if(type(results) != list):
-        return make_response(json.dumps(results), 400)
-
-    results = fill_optional_data(request.json, results[0], ['name','profile_photo','username',
-    'bio','links'])
-
-    results = run_statment('CALL user_patch(?,?,?,?,?,?)', [results['name'], results['profile_photo'], results['username'],
-     results['bio'], results['links'], request.headers['token']])
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
 
 # user-delete
 
@@ -55,34 +39,19 @@ def delete_user():
     return user.user.delete()
 
 
-
+#------------------------- /api/user-sensative -------------------------#
 # user-patch sensative ?
+
+@app.get('/api/user-sensative')
+def get_user_sensative():
+    return user_sensative.user_sensative.get()
+
+
+
 
 @app.patch('/api/user-sensative')
 def patch_user_sensative():
-    is_valid = check_endpoint_info(request.headers, ['token'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
-
-    results = run_statment('CALL user_get_sensative(?)', [request.headers.get('token')])
-    if(type(results) != list):
-        return make_response(json.dumps(results), 400)
-
-    results = fill_optional_data(request.json, results[0], ['email','phone_number',
-    'date_of_birth'])
-
-    results = run_statment('CALL user_patch_sensative(?,?,?,?)', [results['email'], results['phone_number'],
-    results['date_of_birth'], request.headers['token']])
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
-
-
-
-
-
-
+    return user_sensative.user_sensative.patch()
 
 
 #------------------------- /api/user-login -------------------------#
@@ -99,9 +68,16 @@ def logout_user():
     return user_login.user_login.delete()
 
 
-
-
 #------------------------- /api/user-upload -------------------------#
+# get upload
+
+@app.get('/api/user-upload')
+def upload_get_data():
+    is_valid = check_endpoint_info(request.args, ['upload_id'])
+    if(is_valid != None):
+        return make_response(json.dumps(is_valid, default=str), 400)
+
+    results = run_statment('CALL ')
 
 
 # post upload
@@ -120,7 +96,7 @@ def upload_post():
     if(filename == None):
         return make_response(json.dumps("Sorry, something has gone wrong"), 500)
     
-    results = run_statment('CALL post_upload(?,?,?)', [filename, request.form['title'], request.form['description']])
+    results = run_statment('CALL post_upload(?,?,?,?)', [request.form['title'], filename, request.form['description'], request.headers['token']])
     if(type(results) == list):
         return make_response(json.dumps('Success'), 200)
     else:
@@ -128,18 +104,28 @@ def upload_post():
 
 
 # patch upload
-#need another get upload with header as token?
 
 @app.patch('/api/user-upload')
 def upload_patch():
-    is_valid = check_endpoint_info(request.headers, ['token'])
+    is_valid = check_endpoint_info(request.headers, ['token', 'upload_id'])
     if(is_valid != None):
         return make_response(json.dumps(is_valid, default=str), 400)
+
+    results = run_statment('CALL get_upload_token(?,?)', [request.headers['token'], request.headers['upload_id']])
+
+    results = fill_optional_data(request.json, results[0], ['title','description'])
+
+    results = run_statment('CALL patch_upload(?,?,?,?)', [results['title'], results['description'], request.headers['token'], request.headers['upload_id']])
+    if(type(results) == list):
+        return make_response(json.dumps(results, default=str), 200)
+    else:
+        return make_response(json.dumps(results, default=str), 500)
+
     
     
 #------------------------- /api/user-get-upload-image -------------------------#
 
-# need another enpoint?
+# need another enpoint? or add more to it?  or use 2 axios requests? this get and upload get?
 @app.get('/api/user-upload-image')
 def upload_get():
     is_valid = check_endpoint_info(request.args, ['upload_id'])
@@ -154,7 +140,51 @@ def upload_get():
 
     return send_from_directory('images', results[0]['image_ref'])
 
+#------------------------- /api/user-comments -------------------------#
+# GET all comments
 
+
+# POST comment
+
+
+# PATCH comment
+
+
+# DELETE comment
+
+#------------------------- /api/upload-tags -------------------------#
+# GET tags from upload
+
+
+# POST a new tag
+
+
+# DELETE existing tag
+
+
+#------------------------- /api/favourite -------------------------#
+# GET all people you favourited
+
+
+# POST favoutite someone
+
+
+# DELETE un-favourite someone
+
+
+#------------------------- /api/following -------------------------#
+# GET all people you're following
+
+
+# POST follow someone
+
+
+# DELETE stop following
+
+
+
+#------------------------- /api/followed-by -------------------------#
+# GET all people you're followed by
 
 
 if(dbcreds.production_mode == True):

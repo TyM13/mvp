@@ -219,6 +219,7 @@ Returns information about a single user-upload, will error if the upload_id does
 ```
 {
     upload_id: (number)
+    user_id?
 }
 ```
 
@@ -275,7 +276,13 @@ Modify an existing upload if you have a valid token. Note that the token is sent
 ```
 {
     token: (string)
-   upload_id as well?
+}
+```
+
+**required data**
+```
+{
+    upload_id: (string)
 }
 ```
 
@@ -343,7 +350,7 @@ Returns all the comments associated with the upload,
 ```
 {
     token: (string),
-    upload_id: (int)
+
 }
 ```
 
@@ -351,15 +358,11 @@ Data Required:
 
 ```
 {
+    upload_id: (int)
     comments: (string)
 }
 ```
 
-```
-{
-    user_id: (int)
-}
-```
 
 ### `PATCH`
 
@@ -378,7 +381,6 @@ Data Returned:
 
 ```
 {
-    user_id: (int)
     comments: (string)
 }
 ```
@@ -393,15 +395,6 @@ Returns all the comments associated with the upload,
 {
     upload_id: (int),
     token: (string)
-}
-```
-
-Data Returned:
-
-```
-{
-    user_id: (int)
-    comments: (string)
 }
 ```
 
@@ -428,6 +421,7 @@ Retunedred Data:
 
 ```
 {
+    tag.id: (int),
     tags: (string)
 }
 ```
@@ -497,8 +491,7 @@ Returns the users favourites as a feed,
 
 ```
 {
-    favourite_user_id: (int),
-    favourite_upload_id: (int)
+    token: (string)
 }
 ```
 
@@ -506,7 +499,7 @@ Retunedred Data:
 
 ```
 {
-    tags: (string)
+    favourite_user_upload_id's
 }
 ```
 
@@ -531,8 +524,7 @@ Required Data:
 
 ```
 {
-    favourite_user_id: (int),
-    favourite_upload_id: (int),
+    upload_id: (int),
 }
 ```
 
@@ -554,10 +546,15 @@ Deletes an existing favourite,
 }
 ```
 
+```
+{
+    upload_id: (int)
+}
+```
+
 **No Data Returned**
 
 <br>
-<!-- ---------------------------------------------------------------------------------------- -->
 <br>
 
 ## `following`
@@ -580,7 +577,7 @@ Retunedred Data:
 
 ```
 {
-    following_user_id: (int),
+    user_id: (int)
 }
 ```
 
@@ -603,8 +600,7 @@ Required Data:
 
 ```
 {
-    favourite_user_id: (int),  or returned data?
-    favourite_upload_id: (int), or returned data?
+ user_id: (int),
 }
 ```
 
@@ -622,6 +618,14 @@ stops following a user,
 ```
 {
     token: (string)
+}
+```
+
+Required Data:
+
+```
+{
+ user_id: (int),
 }
 ```
 
@@ -650,7 +654,7 @@ Retunedred Data:
 
 ```
 {
-    followed_user_id: (int)
+    user_id: (int)
 }
 ```
 <br>
