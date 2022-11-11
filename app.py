@@ -7,6 +7,7 @@ from uuid import uuid4
 import user_login.user_login
 import user.user
 import user_sensative.user_sensative
+import user_upload.user_upload
 
 app = Flask(__name__)
 
@@ -17,6 +18,7 @@ app = Flask(__name__)
 @app.get('/api/user')
 def get_user():
     return user.user.get()
+
 
 # user-post
 
@@ -47,8 +49,6 @@ def get_user_sensative():
     return user_sensative.user_sensative.get()
 
 
-
-
 @app.patch('/api/user-sensative')
 def patch_user_sensative():
     return user_sensative.user_sensative.patch()
@@ -61,6 +61,7 @@ def patch_user_sensative():
 def login_user():
     return user_login.user_login.post()
 
+
 # user-logout
 
 @app.delete('/api/user-login')
@@ -69,7 +70,7 @@ def logout_user():
 
 
 #------------------------- /api/user-upload -------------------------#
-# get upload
+# get upload  display uploads to everyone even if not logged in
 
 @app.get('/api/user-upload')
 def upload_get_data():
@@ -84,43 +85,21 @@ def upload_get_data():
 
 @app.post('/api/user-upload')
 def upload_post():
-    is_valid = check_endpoint_info(request.form, ['title', 'description'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
-
-    is_valid = check_endpoint_info(request.files, ['upload_image'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
-
-    filename = save_file(request.files['upload_image'])
-    if(filename == None):
-        return make_response(json.dumps("Sorry, something has gone wrong"), 500)
-    
-    results = run_statment('CALL post_upload(?,?,?,?)', [request.form['title'], filename, request.form['description'], request.headers['token']])
-    if(type(results) == list):
-        return make_response(json.dumps('Success'), 200)
-    else:
-        return make_response(json.dumps(results), 500)
+    return user_upload.user_upload.post()
 
 
 # patch upload
 
 @app.patch('/api/user-upload')
 def upload_patch():
-    is_valid = check_endpoint_info(request.headers, ['token', 'upload_id'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
+    return user_upload.user_upload.patch()
 
-    results = run_statment('CALL get_upload_token(?,?)', [request.headers['token'], request.headers['upload_id']])
 
-    results = fill_optional_data(request.json, results[0], ['title','description'])
+# delete upload
 
-    results = run_statment('CALL patch_upload(?,?,?,?)', [results['title'], results['description'], request.headers['token'], request.headers['upload_id']])
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
-
+@app.delete('/api/user-upload')
+def upload_delete():
+    return user_upload.user_upload.delete()
     
     
 #------------------------- /api/user-get-upload-image -------------------------#
