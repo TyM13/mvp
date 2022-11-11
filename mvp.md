@@ -212,14 +212,13 @@ Supported HTTP Methods: **GET, POST, PATCH, DELETE**
 
 ### `GET`
 
-Returns information about a single user-upload, will error if the upload_id does not exist.
+Returns information about a single user-upload , will error if the upload_id does not exist.
 
 **Required Params:**
 
 ```
 {
-    upload_id: (number)
-    user_id?
+    token: (string)  display favourties as a feed
 }
 ```
 
@@ -228,11 +227,7 @@ Returns information about a single user-upload, will error if the upload_id does
 ```
 {
     title: (string),
-    image_ref: (string),
     description: (string),
-    comments: (string), ?
-    favourite: (string), ?
-    tags: (string), ?
     upload_id: (number)
     created_at: (string)
 }
@@ -389,7 +384,7 @@ Data Returned:
 
 Returns all the comments associated with the upload,
 
-**Required Params:**
+**Required Headers:**
 
 ```
 {

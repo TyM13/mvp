@@ -122,14 +122,66 @@ def upload_get():
 #------------------------- /api/user-comments -------------------------#
 # GET all comments
 
+@app.get('/api/user-comments')
+def comments_get():
+    is_valid = check_endpoint_info(request.args, ['upload_id'])
+    if(is_valid != None):
+        return make_response(json.dumps(is_valid, default=str), 400)
+
+    results = run_statment('CALL get_comments(?)', [request.args.get('upload_id')])
+    if(type(results) == list):
+        return make_response(json.dumps(results, default=str), 200)
+    else:
+        return make_response(json.dumps(results, default=str), 500)
 
 # POST comment
+
+@app.post('/api/user-comments')
+def comments_post():
+    is_valid = check_endpoint_info(request.headers, ['token'])
+    is_valid_data = check_endpoint_info(request.json, ['content' ,'upload_id'])
+    if(is_valid != None or is_valid_data != None):
+        return make_response(json.dumps(is_valid, is_valid_data, default=str), 400)
+
+    results = run_statment('CALL post_comment(?,?,?)', [request.json['content'], request.json['upload_id'], request.headers['token']])
+    if(type(results) == list):
+        return make_response(json.dumps(results, default=str), 200)
+    else:
+        return make_response(json.dumps(results, default=str), 500)
+
+
 
 
 # PATCH comment
 
 
+@app.patch('/api/user-comments')
+def comments_patch():
+    is_valid = check_endpoint_info(request.headers, ['upload_id', 'token'])
+    is_valid_data = check_endpoint_info(request.json, ['content'])
+    if(is_valid != None or is_valid_data != None):
+        return make_response(json.dumps(is_valid, is_valid_data, default=str), 400)
+
+    results = run_statment('CALL patch_comments(?,?,?)', [request.json['content'], request.headers['upload_id'], request.headers['token']])
+    if(type(results) == list):
+        return make_response(json.dumps(results, default=str), 200)
+    else:
+        return make_response(json.dumps(results, default=str), 500)
+
+
 # DELETE comment
+
+@app.delete('/api/user-comments')
+def comments_delete():
+    is_valid = check_endpoint_info(request.headers, ['upload_id', 'token'])
+    if(is_valid != None):
+        return make_response(json.dumps(is_valid, default=str), 400)
+
+    results = run_statment('CALL delete_comments(?,?)', [request.headers['upload_id'], request.headers['token']])
+    if(type(results) == list):
+        return make_response(json.dumps(results, default=str), 200)
+    else:
+        return make_response(json.dumps(results, default=str), 500)
 
 #------------------------- /api/upload-tags -------------------------#
 # GET tags from upload

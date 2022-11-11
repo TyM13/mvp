@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS `comments`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `comments` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `comment_content` varchar(100) COLLATE utf8mb4_bin NOT NULL,
+  `content` varchar(100) COLLATE utf8mb4_bin NOT NULL,
   `upload_id` int(10) unsigned NOT NULL,
   `user_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
@@ -32,7 +32,7 @@ CREATE TABLE `comments` (
   KEY `comments_FK_1` (`user_id`),
   CONSTRAINT `comments_FK` FOREIGN KEY (`upload_id`) REFERENCES `user_upload` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `comments_FK_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,6 +41,7 @@ CREATE TABLE `comments` (
 
 LOCK TABLES `comments` WRITE;
 /*!40000 ALTER TABLE `comments` DISABLE KEYS */;
+INSERT INTO `comments` VALUES (8,'changed again woo',4,1),(11,'best comment',4,10);
 /*!40000 ALTER TABLE `comments` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -109,7 +110,7 @@ DROP TABLE IF EXISTS `tags`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `tags` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `tags` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
+  `content` varchar(100) COLLATE utf8mb4_bin DEFAULT NULL,
   `upload_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `tags_FK` (`upload_id`),
@@ -208,7 +209,7 @@ CREATE TABLE `user_upload` (
   PRIMARY KEY (`id`),
   KEY `upload_FK` (`user_id`),
   CONSTRAINT `upload_FK` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -217,13 +218,39 @@ CREATE TABLE `user_upload` (
 
 LOCK TABLES `user_upload` WRITE;
 /*!40000 ALTER TABLE `user_upload` DISABLE KEYS */;
-INSERT INTO `user_upload` VALUES (2,'patched_title','3142db5366ee433a846656f449a55b57.jpg','patched_description',1),(3,'upload title','c44ae95ddd224240b2c9aa925d088c67.jpg','test description',1);
+INSERT INTO `user_upload` VALUES (4,'test upload title','be6714d9b0b74410bb9d1f8718efae6f.jpg','test description',1);
 /*!40000 ALTER TABLE `user_upload` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
 -- Dumping routines for database 'mvp'
 --
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `delete_comments` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_comments`(comments_upload_id_input int unsigned, user_session_token_input varchar(200))
+    MODIFIES SQL DATA
+begin
+	
+delete c from comments c inner join user_session us on c.user_id=us.user_id
+where token=user_session_token_input and c.id=comments_upload_id_input;
+	
+
+select row_count();
+	commit;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `delete_upload` */;
@@ -234,14 +261,38 @@ UNLOCK TABLES;
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_upload`(user_session_token_input varchar(200))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `delete_upload`(user_session_token_input varchar(200), user_upload_user_id_input int unsigned)
     MODIFIES SQL DATA
 begin
 	
-delete uu from user_upload uu inner join user_session us on us.user_id=uu.id
-where token=user_session_token_input;
+delete uu from user_upload uu inner join user_session us on us.user_id=uu.user_id 
+where token=user_session_token_input and uu.id=user_upload_user_id_input;
 
 select row_count();
+	
+	commit;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `get_comments` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_comments`(user_upload_id_input int unsigned)
+begin
+	
+	select convert(content using utf8) as content, user_id
+	from comments c
+	where c.upload_id=user_upload_id_input;
 	
 	commit;
 END ;;
@@ -260,12 +311,11 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `get_upload`(user_session_token_input varchar(200))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `get_upload`()
 begin
 	
 	select title, description 
-	from user_upload uu
-	where token=user_session_token_input;
+	from user_upload uu;
 	
 	commit;
 END ;;
@@ -322,6 +372,34 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `patch_comments` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `patch_comments`(comments_content_input varchar(100), comments_upload_id_input int unsigned, user_session_token_input varchar(200))
+    MODIFIES SQL DATA
+begin
+	
+	update comments c inner join user_session us on c.user_id=us.user_id
+	set c.content=comments_content_input
+	where us.token=user_session_token_input and c.id=comments_upload_id_input;
+
+
+select row_count();
+
+	commit;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `patch_upload` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -359,14 +437,36 @@ DELIMITER ;
 /*!50003 SET character_set_results = utf8mb4 */ ;
 /*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
 DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `post_comment`(comments_comment_content_input varchar(100), comments_upload_id_input int unsigned, user_session_token_input varchar(200))
+CREATE DEFINER=`root`@`localhost` PROCEDURE `post_comment`(comments_content_input varchar(100), comments_upload_id_input int unsigned, user_session_token_input varchar(200))
     MODIFIES SQL DATA
 begin
 	
-	insert into comments (comment_content, upload_id)
-	select comments_comment_content_input, comments_upload_id_input from user_session where token=user_session_token_input;
+	insert into comments (content, upload_id, user_id)
+	select comments_content_input, comments_upload_id_input, user_id from user_session where token=user_session_token_input;
 
 select last_insert_id(); 
+	
+	commit;
+end ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'IGNORE_SPACE,STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `post_tag` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_unicode_ci */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `post_tag`(tags_content_input varchar(100), user_session_token_input varchar(200), tags_upload_id_input int unsigned)
+    MODIFIES SQL DATA
+begin
+	
 	
 	commit;
 END ;;
@@ -633,4 +733,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-11-10 16:22:42
+-- Dump completed on 2022-11-10 21:01:12
