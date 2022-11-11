@@ -153,9 +153,32 @@ def comments_delete():
 #------------------------- /api/upload-tags -------------------------#
 # GET tags from upload
 
+@app.get('/api/upload-tags')
+def tags_get():
+    is_valid = check_endpoint_info(request.args, ['upload_id'])
+    if(is_valid != None):
+        return make_response(json.dumps(is_valid, default=str), 400)
+
+    results = run_statment('CALL get_tags(?)', [request.args['upload_id']])
+    if(type(results) == list):
+        return make_response(json.dumps(results, default=str), 200)
+    else:
+        return make_response(json.dumps(results, default=str), 500)
 
 # POST a new tag
 
+@app.post('/api/upload-tags')
+def tags_post():
+    is_valid = check_endpoint_info(request.headers, ['upload_id', 'token'])
+    is_valid_data = check_endpoint_info(request.json, ['content'])
+    if(is_valid != None or is_valid_data != None):
+        return make_response(json.dumps(is_valid, is_valid_data, default=str), 400)
+
+    results = run_statment('CALL post_tag(?,?,?)', [request.json['content'], request.headers['upload_id'], request.headers['token']])
+    if(type(results) == list):
+        return make_response(json.dumps(results, default=str), 200)
+    else:
+        return make_response(json.dumps(results, default=str), 500)
 
 # DELETE existing tag
 
