@@ -10,6 +10,7 @@ import user_sensative.user_sensative
 import user_upload.user_upload
 import user_comments.user_comments
 import user_favourites.user_favourites
+import upload_tags.upload_tags
 
 app = Flask(__name__)
 
@@ -155,33 +156,20 @@ def comments_delete():
 
 @app.get('/api/upload-tags')
 def tags_get():
-    is_valid = check_endpoint_info(request.args, ['upload_id'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
-
-    results = run_statment('CALL get_tags(?)', [request.args['upload_id']])
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
+    return upload_tags.upload_tags.get()
 
 # POST a new tag
 
 @app.post('/api/upload-tags')
 def tags_post():
-    is_valid = check_endpoint_info(request.headers, ['upload_id', 'token'])
-    is_valid_data = check_endpoint_info(request.json, ['content'])
-    if(is_valid != None or is_valid_data != None):
-        return make_response(json.dumps(is_valid, is_valid_data, default=str), 400)
+    return upload_tags.upload_tags.post()
 
-    results = run_statment('CALL post_tag(?,?,?)', [request.json['content'], request.headers['upload_id'], request.headers['token']])
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
 
 # DELETE existing tag
 
+@app.delete('/api/upload-tags')
+def tags_delete():
+    return upload_tags.upload_tags.delete()
 
 #------------------------- /api/user-favourite -------------------------#
 # GET all people you favourited
