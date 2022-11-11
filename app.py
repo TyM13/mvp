@@ -8,6 +8,8 @@ import user_login.user_login
 import user.user
 import user_sensative.user_sensative
 import user_upload.user_upload
+import user_comments.user_comments
+import user_favourites.user_favourites
 
 app = Flask(__name__)
 
@@ -70,7 +72,7 @@ def logout_user():
 
 
 #------------------------- /api/user-upload -------------------------#
-# get upload  display uploads to everyone even if not logged in
+# get upload  display uploads to everyone even if not logged in no required data limit amount from newest
 
 @app.get('/api/user-upload')
 def upload_get_data():
@@ -124,32 +126,14 @@ def upload_get():
 
 @app.get('/api/user-comments')
 def comments_get():
-    is_valid = check_endpoint_info(request.args, ['upload_id'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
+    return user_comments.user_comments.get()
 
-    results = run_statment('CALL get_comments(?)', [request.args.get('upload_id')])
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
 
 # POST comment
 
 @app.post('/api/user-comments')
 def comments_post():
-    is_valid = check_endpoint_info(request.headers, ['token'])
-    is_valid_data = check_endpoint_info(request.json, ['content' ,'upload_id'])
-    if(is_valid != None or is_valid_data != None):
-        return make_response(json.dumps(is_valid, is_valid_data, default=str), 400)
-
-    results = run_statment('CALL post_comment(?,?,?)', [request.json['content'], request.json['upload_id'], request.headers['token']])
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
-
-
+    return user_comments.user_comments.post()
 
 
 # PATCH comment
@@ -157,31 +141,14 @@ def comments_post():
 
 @app.patch('/api/user-comments')
 def comments_patch():
-    is_valid = check_endpoint_info(request.headers, ['upload_id', 'token'])
-    is_valid_data = check_endpoint_info(request.json, ['content'])
-    if(is_valid != None or is_valid_data != None):
-        return make_response(json.dumps(is_valid, is_valid_data, default=str), 400)
-
-    results = run_statment('CALL patch_comments(?,?,?)', [request.json['content'], request.headers['upload_id'], request.headers['token']])
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
+    return user_comments.user_comments.patch()
 
 
 # DELETE comment
 
 @app.delete('/api/user-comments')
 def comments_delete():
-    is_valid = check_endpoint_info(request.headers, ['upload_id', 'token'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
-
-    results = run_statment('CALL delete_comments(?,?)', [request.headers['upload_id'], request.headers['token']])
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
+    return user_comments.user_comments.delete()
 
 #------------------------- /api/upload-tags -------------------------#
 # GET tags from upload
@@ -193,15 +160,26 @@ def comments_delete():
 # DELETE existing tag
 
 
-#------------------------- /api/favourite -------------------------#
+#------------------------- /api/user-favourite -------------------------#
 # GET all people you favourited
+
+@app.get('/api/user-favourite')
+def favourite_get():
+    return user_favourites.user_favourites.get()
 
 
 # POST favoutite someone
 
+@app.post('/api/user-favourite')
+def favourite_post():
+    return user_favourites.user_favourites.post()
+
 
 # DELETE un-favourite someone
 
+@app.delete('/api/user-favourite')
+def favourite_delete():
+    return user_favourites.user_favourites.delete()
 
 #------------------------- /api/following -------------------------#
 # GET all people you're following
