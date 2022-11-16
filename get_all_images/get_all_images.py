@@ -1,9 +1,7 @@
-from apihelper import check_endpoint_info, fill_optional_data, save_file
-from dbhelper import run_statment
-from flask import Flask, request, make_response, send_from_directory
+from apihelper import check_endpoint_info
+from flask import request, make_response, send_from_directory
 import json
-import dbcreds
-from uuid import uuid4
+
 
 
 def get():

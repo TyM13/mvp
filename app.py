@@ -1,9 +1,5 @@
-from apihelper import check_endpoint_info, fill_optional_data, save_file
-from dbhelper import run_statment
-from flask import Flask, request, make_response, send_from_directory
-import json
+from flask import Flask
 import dbcreds
-from uuid import uuid4
 import user_login.user_login
 import user.user
 import user_sensative.user_sensative
@@ -244,37 +240,3 @@ else:
     CORS(app)
     print("Running in Testing Mode!")
     app.run(debug=True)
-
-
-
-
-
-#  call post_favourite(6,'token');
-
-#  call get_favourite('919f568243a549ffbe14f53bc3e9af5a');
-
-#  call delete_favourite(6,'token');
-
-#  call post_tag('TAG!', 6,'919f568243a549ffbe14f53bc3e9af5a');
-
-#  call get_tags(7);
-
-#  call delete_tags(5,'token');
-
-#  call post_following(1,'919f568243a549ffbe14f53bc3e9af5a');
-
-#  call get_following('token');
-
-#  call delete_following(1,'919f568243a549ffbe14f53bc3e9af5a');
-
-#  call get_followed_by('token');
- 
-# call test(1,'919f568243a549ffbe14f53bc3e9af5a');
-
-# call patch_password('passwords','token');
-
-# call get_upload_image(6);
-
-# call get_all_uploads();
-
-# call get_all_images();
