@@ -75,6 +75,8 @@ def run_statment(statment, list_of_args=[]):
 
 
 def make_dictionary(results, cursor):
+    if(type(results) != list):
+        return results
 # get the columns from the statment the cursor executed
     columns = [i[0] for i in cursor.description]
 # start an empyty array for the up coming dictionaru rows

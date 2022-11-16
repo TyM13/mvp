@@ -11,6 +11,13 @@ import user_upload.user_upload
 import user_comments.user_comments
 import user_favourites.user_favourites
 import upload_tags.upload_tags
+import change_password.change_password
+import get_upload_image_id.get_upload_image_id
+import get_upload_meta_data_id.get_upload_meta_data_id
+import following.following
+import followed_by.followed_by
+import get_all_images.get_all_images
+import get_all_uploads_meta.get_all_uploads_meta
 
 app = Flask(__name__)
 
@@ -62,20 +69,7 @@ def patch_user_sensative():
 
 @app.patch('/api/patch-password')
 def password_patch():
-    is_valid = check_endpoint_info(request.headers, ['token'])
-    is_valid_data = check_endpoint_info(request.json, ['password'])
-    if(is_valid != None or is_valid_data != None):
-        return make_response(json.dumps(is_valid, is_valid_data, default=str), 400)
-
-    results = run_statment('CALL user_get_sensative(?)', [request.headers.get('token')])
-    if(type(results) != list):
-        return make_response(json.dumps(results), 400)
-
-    results = run_statment('CALL patch_password(?,?)', [results[0]['password'], request.headers['token']])
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
+    return change_password.change_password.patch()
 
 #------------------------- /api/user-login -------------------------#
 # user-login
@@ -93,17 +87,6 @@ def logout_user():
 
 
 #------------------------- /api/user-upload -------------------------#
-# get upload  display uploads to everyone even if not logged in no required data limit amount from newest
-
-@app.get('/api/user-upload')
-def upload_get_data():
-    is_valid = check_endpoint_info(request.args, ['upload_id'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
-
-    results = run_statment('CALL ')
-
-
 # post upload
 
 @app.post('/api/user-upload')
@@ -127,35 +110,19 @@ def upload_delete():
     
 #------------------------- /api/get-upload-image -------------------------#
 
-# need another enpoint? or add more to it?  or use 2 axios requests? this get and upload get?
+# gets using id
 @app.get('/api/user-upload-image')
 def upload_get():
-    is_valid = check_endpoint_info(request.args, ['upload_id'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
+    return get_upload_image_id.get_upload_image_id.get()
 
-    results = run_statment('CALL get_upload_image(?)', [request.args['upload_id']])
-    if(type(results) != list):
-        return make_response(json.dumps(results, default=str), 500)
-    elif(len(results) == 0):
-        return make_response(json.dumps("invalid image id"), 400)
-
-    return send_from_directory('images', results[0]['upload_image'])
 
 #------------------------- /api/get-meta-data -------------------------#
-
+#gets using id
 
 @app.get('/api/upload-meta-data')
 def meta_data_get():
-    is_valid = check_endpoint_info(request.args, ['upload_id'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
+    return get_upload_meta_data_id.get_upload_meta_data_id.get()
 
-    results = run_statment('CALL get_meta_data(?)', [request.args['upload_id']])
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
 
 #------------------------- /api/user-comments -------------------------#
 # GET all comments
@@ -232,82 +199,40 @@ def favourite_delete():
 
 @app.get('/api/following')
 def following_get():
-    is_valid = check_endpoint_info(request.args, ['token'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
-    
-    results = run_statment('CALL get_following(?)', [request.args['token']])
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
+    return following.following.get()
 
 # POST follow someone  MIGHT BE WRONG NEED TO CHECK PROCEDURE
-# @app.post('/api/following')
-# def following_post():
-#     is_valid = check_endpoint_info(request.headers, ['token'])
-#     is_valid_data = check_endpoint_info(request.json, ['following_user_id', 'followed_by_user_id'])
-#     if(is_valid != None or is_valid_data != None):
-#         return make_response(json.dumps(is_valid, is_valid_data, default=str), 400)
-
-#     results = run_statment('CALL post_following(?,?,?)', [request.json['following_user_id'],request.json['followed_by_user_id'], request.headers['token']])
-#     if(type(results) == list):
-#         return make_response(json.dumps(results, default=str), 200)
-#     else:
-#         return make_response(json.dumps(results, default=str), 500)
+@app.post('/api/following')
+def following_post():
+    return following.following.post()
 
 
 # DELETE stop following
 
 @app.delete('/api/following')
 def following_delete():
-    is_valid = check_endpoint_info(request.headers, ['token'])
-    is_valid_data = check_endpoint_info(request.json, ['following_user_id'])
-    if(is_valid != None or is_valid_data != None):
-        return make_response(json.dumps(is_valid, is_valid_data, default=str), 400)
-
-    results = run_statment('CALL delete_following(?,?)', [request.json['following_user_id'] ,request.headers['token']])
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
+    return following.following.delete()
 
 
 #------------------------- /api/followed-by -------------------------#
 # GET all people you're followed by
 @app.get('/api/followed-by')
 def followed_by_get():
-    is_valid = check_endpoint_info(request.args, ['token'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
-    
-    results = run_statment('CALL get_followed_by(?)', [request.args['token']])
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
+    return followed_by.followed_by.get()
 
 
 #------------------------- /api/get-all-images -------------------------#
 
 @app.get('/api/get-all-images')
 def upload_get_all_images():
-    is_valid = check_endpoint_info(request.args, ['file_name'])
-    if(is_valid != None):
-        return make_response(json.dumps(is_valid, default=str), 400)
+    return get_all_images.get_all_images.get()
 
-
-    return send_from_directory('images', request.args['file_name'])
 
 #------------------------- /api/get-all-uploads-meta -------------------------#
 
 @app.get('/api/get-all-uploads-meta')
 def upload_get_all_uploads_meta():
-    results = run_statment('CALL get_all_uploads_meta()')
-    if(type(results) == list):
-        return make_response(json.dumps(results, default=str), 200)
-    else:
-        return make_response(json.dumps(results, default=str), 500)
+    return get_all_uploads_meta.get_all_uploads_meta.get()
 
 
 if(dbcreds.production_mode == True):

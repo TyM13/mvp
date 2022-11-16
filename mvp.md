@@ -208,30 +208,9 @@ Delete an existing token. Will error if the token sent does not exist.
 ## `User-upload`
 
 **URL: http://127.0.0.1:5000/api/user-upload**  
-Supported HTTP Methods: **GET, POST, PATCH, DELETE**
+Supported HTTP Methods: ** POST, PATCH, DELETE**
 
-### `GET`
 
-Returns information about a single user-upload , will error if the upload_id does not exist.
-
-**Required Params:**
-
-```
-{
-    token: (string)  display favourties as a feed
-}
-```
-
-**Data Returned**
-
-```
-{
-    title: (string),
-    description: (string),
-    upload_id: (number)
-    created_at: (string)
-}
-```
 
 <br>
 <br>
