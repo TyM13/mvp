@@ -54,6 +54,7 @@ def patch():
     if(is_valid != None):
         return make_response(json.dumps(is_valid, default=str), 400)
 
+# runs the statment CALL user_get_sensative and sends the token as an arguement and stores the select statmentment from the procedure as results 
     results = run_statment('CALL user_get_sensative(?)', [request.headers.get('token')])
     if(type(results) != list):
         return make_response(json.dumps(results), 400)
@@ -61,6 +62,8 @@ def patch():
     results = fill_optional_data(request.json, results[0], ['name','profile_photo','username',
     'bio','links'])
 
+# runs the statment CALL user_patch and sends name, profile_photo, username, bio, links, token
+# as arguements and stores the select statmentment from the procedure as results 
     results = run_statment('CALL user_patch(?,?,?,?,?,?)', [results['name'], results['profile_photo'], results['username'],
      results['bio'], results['links'], request.headers['token']])
 # if results is equal to a list it will display a 200 message (success), and print the results of the procedure as json 
@@ -76,10 +79,13 @@ def patch():
 def delete():
 # checks the sent data request.headers and the expected data token, stores it as the variable is_valid
     is_valid = check_endpoint_info(request.headers, ['token'])
+# checks the sent data request.json and the expected data password, stores it as the variable is_valid_data
     is_valid_password = check_endpoint_info(request.json, ['password'])
+# if the variable is_valid or is_valid_data is not equal to none it will send back 400 error and a message (client error)
     if(is_valid != None or is_valid_password != None):
         return make_response(json.dumps(is_valid, is_valid_password, default=str), 400)
 
+# runs the statment CALL user_delete and sends the password and token as an arguement and stores the select statmentment from the procedure as results 
     results = run_statment('CALL user_delete(?,?)', [request.json['password'], request.headers['token']])
     if(type(results) == list):
 # if results is equal to a list it will display a 200 message (success), and print the results of the procedure as json 

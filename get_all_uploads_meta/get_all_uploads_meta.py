@@ -6,6 +6,7 @@ import json
 
 
 def get():
+# runs the statment CALL get_all_uploads_meta and stores the select statmentment from the procedure as results
     results = run_statment('CALL get_all_uploads_meta()')
 # if results is equal to a list it will display a 200 message (success), and print the results of the procedure as json 
 # if it isn't it will display a 500 message (server error)
