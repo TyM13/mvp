@@ -34,6 +34,7 @@ def patch():
     if(type(results) != list):
         return make_response(json.dumps(results), 400)
 
+# it will request info from results at the index 0 and fill in all the information it as the same info
     results = fill_optional_data(request.json, results[0], ['email','phone_number',
     'date_of_birth'])
 

@@ -56,9 +56,11 @@ def patch():
 
 # runs the statment CALL user_get_sensative and sends the token as an arguement and stores the select statmentment from the procedure as results 
     results = run_statment('CALL user_get_sensative(?)', [request.headers.get('token')])
+# if the type of results is not equal to a list it will display the results and a 400 error message (client error)
     if(type(results) != list):
         return make_response(json.dumps(results), 400)
 
+# it will request info from results at the index 0 and fill in all the information it as the same info
     results = fill_optional_data(request.json, results[0], ['name','profile_photo','username',
     'bio','links'])
 

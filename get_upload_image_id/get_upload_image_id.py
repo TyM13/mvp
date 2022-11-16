@@ -13,6 +13,7 @@ def get():
     if(is_valid != None):
         return make_response(json.dumps(is_valid, default=str), 400)
 
+# runs the statment CALL get_upload_image and sends the upload_id as an arguement and stores the select statmentment from the procedure as results  
     results = run_statment('CALL get_upload_image(?)', [request.args['upload_id']])
 # if results is not equal to a list it will display a 200 message (success), and print the results of the procedure as json 
 # if it isn't and the length of the results us equal to zero it will return a 400 and the string
